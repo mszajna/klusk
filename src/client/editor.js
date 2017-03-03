@@ -1,6 +1,7 @@
 import ace from 'brace';
 import 'brace/theme/tomorrow_night_eighties';
 import 'brace/mode/javascript';
+import {mapKeys} from 'lodash/fp';
 import {fromAceDelta, toAceDeltas} from './aceOt';
 import {Client, TextOperation} from 'ot';
 import io from 'socket.io-client';
@@ -25,12 +26,16 @@ editor.commands.addCommand({
 
 socket.on('connect', () => socket.emit('open', {path}));
 
-socket.on('load', ({path, revision, contents}) => {
+socket.on('reconnect', () => {
+  mapKeys(path => socket.emit('open', {path}) )(documents);
+});
+
+socket.on('load', ({path, rev, contents}) => {
   const editSession = ace.createEditSession(contents, 'ace/mode/javascript');
   const document = editSession.getDocument();
   document.path = path;
 
-  const client = documents[path] = new Client(revision);
+  const client = documents[path] = new Client(rev);
   var isUpdating = false;
   document.on('change', delta => {
     if (isUpdating) return;
@@ -56,7 +61,4 @@ socket.on('sync', ({path, op}) => {
 
 socket.on('saved', ({path}) => console.log('saved', path));
 
-socket.on('overwritten', ({path}) => {
-  console.log('File remotely overwritten, reloading');
-  socket.emit('open', {path});
-});
+socket.on('overwritten', ({path}) => socket.emit('open', {path}));

@@ -7,9 +7,9 @@ export default (io, documentStore) => {
   });
 
   return socket => {
-    socket.on('open', ({path}) => {
-      openDocument(documentStore)(path, document => {
-        socket.emit('load', {path, revision: document.operations.length, contents: document.document});
+    socket.on('open', ({path, rev}) => {
+      openDocument(documentStore)(path, (contents, rev) => {
+        socket.emit('load', {path, rev, contents});
         socket.join(path);
       });
     });
@@ -22,8 +22,8 @@ export default (io, documentStore) => {
     });
 
     socket.on('save', ({path}) => {
-      saveDocument(documentStore)(path, revision => {
-        io.sockets.in(path).emit('saved', {path, revision});
+      saveDocument(documentStore)(path, rev => {
+        io.sockets.in(path).emit('saved', {path, rev});
       });
     });
 
