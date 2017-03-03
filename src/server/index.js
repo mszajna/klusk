@@ -9,7 +9,7 @@ import documentSocket from './documentSocket';
 const app = new Koa();
 app.use(route.get('/', async function (ctx) {await send(ctx, 'dist/client/index.html');}));
 app.use(route.get('/client/*', serve('dist')));
-app.use(route.get('/file/*', async function (ctx) {await send(ctx, 'dist/client/index.html');}));
+app.use(route.get('/edit/*', async function (ctx) {await send(ctx, 'dist/client/index.html');}));
 
 const server = createServer(app.callback());
 const io = socketIo(server);

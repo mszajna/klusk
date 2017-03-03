@@ -1,53 +1,47 @@
-import {Server as OtDocument, TextOperation} from 'ot';
-import {mapKeys} from 'lodash/fp';
-import fs from 'fs';
+import {registerChangeWatcher, openDocument, closeDocument, writeDocument, saveDocument, forEachDocument} from './documents';
 
-const documents = {};
+export default io => {
 
-const openDocument = (path, callback) => {
-  if (documents[path]) {
-    callback(documents[path]);
-  } else {
-    fs.readFile(`.${path}`, 'utf8', (err, data) => {
-      if (err) {console.log(err); return;}
-      documents[path] = new OtDocument(data);
-      callback(documents[path]);
-    });
-  }
-};
+  registerChangeWatcher(path => {
+    io.sockets.in(path).emit('overwritten', {path});
+  });
 
-export default io => socket => {
-  socket.on('open', ({path}) => {
-    openDocument(path, () => {
-      socket.join(path, () => {
-        socket.emit('load', {path, revision: documents[path].operations.length, contents: documents[path].document});
+  return socket => {
+    socket.on('open', ({path}) => {
+      openDocument(path, document => {
+        socket.join(path, () => {
+          socket.emit('load', {path, revision: document.operations.length, contents: document.document});
+        });
       });
     });
-  });
 
-  socket.on('write', ({path, rev, op}) => {
-    try {
-      documents[path].receiveOperation(rev, TextOperation.fromJSON(op));
-      socket.emit('ack', {path});
-      socket.broadcast.in(path).emit('sync', {path, op});
-    } catch (e) {
-      console.log(e, op);
-    }
-  });
-
-  socket.on('close', ({path}) => {
-    socket.leave(path, () => {
-      if (!io.sockets.adapter.rooms[path]) {
-        delete documents[path];
-      }
+    socket.on('write', ({path, rev, op}) => {
+      writeDocument(path, rev, op, () => {
+        socket.emit('ack', {path});
+        socket.broadcast.in(path).emit('sync', {path, op});
+      });
     });
-  });
 
-  socket.on('disconnect', () => {
-    mapKeys(path => {
-      if (!io.sockets.adapter.rooms[path]) {
-        delete documents[path];
-      }
-    })(documents);
-  });
+    socket.on('save', ({path}) => {
+      saveDocument(path, revision => {
+        io.sockets.in(path).emit('saved', {path, revision});
+      });
+    });
+
+    socket.on('close', ({path}) => {
+      socket.leave(path, () => {
+        if (!io.sockets.adapter.rooms[path]) {
+          closeDocument(path);
+        }
+      });
+    });
+
+    socket.on('disconnect', () => {
+      forEachDocument(path => {
+        if (!io.sockets.adapter.rooms[path]) {
+          closeDocument(path);
+        }
+      });
+    });
+  };
 };

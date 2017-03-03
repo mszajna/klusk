@@ -1,22 +1,34 @@
 import ace from 'brace';
-import 'brace/mode/javascript'; 
+import 'brace/theme/tomorrow_night_eighties';
+import 'brace/mode/javascript';
 import {fromAceDelta, toAceDeltas} from './aceOt';
 import {Client, TextOperation} from 'ot';
 import io from 'socket.io-client';
 
 const editor = ace.edit("editor");
+editor.setTheme('ace/theme/tomorrow_night_eighties');
 
 const documents = {};
 
 /*global window*/
-const path = window.location.pathname.startsWith('/file/') ? window.location.pathname.substring('/file'.length) : '/';
+const path = window.location.pathname.startsWith('/edit/') ? window.location.pathname.substring('/edit/'.length) : '/dev/null';
 
 const socket = io('/');
+
+editor.commands.addCommand({
+  name: 'save',
+  bindKey: {win: 'Ctrl-s', mac: 'Command-s'},
+  exec: () => {
+    socket.emit('save', {path: editor.getSession().getDocument().path});
+  }
+});
+
 socket.on('connect', () => socket.emit('open', {path}));
 
 socket.on('load', ({path, revision, contents}) => {
   const editSession = ace.createEditSession(contents, 'ace/mode/javascript');
   const document = editSession.getDocument();
+  document.path = path;
 
   const client = documents[path] = new Client(revision);
   var isUpdating = false;
@@ -40,4 +52,10 @@ socket.on('ack', ({path}) => {
 
 socket.on('sync', ({path, op}) => {
   documents[path].applyServer(TextOperation.fromJSON(op));
+});
+
+socket.on('saved', ({path}) => console.log('saved', path));
+
+socket.on('overwritten', ({path}) => {
+  socket.emit('open', {path});
 });

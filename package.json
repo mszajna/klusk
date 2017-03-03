@@ -4,7 +4,7 @@
   "description": "Klusk lets you edit remote files with your web browser",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --ignore dist/ -e js,css,html src/server/index.js --exec 'npm run test && webpack && babel-node'",
+    "start": "nodemon --ignore dist/ --ignore ignore/ -e js,css,html src/server/index.js --exec 'npm run test && webpack && babel-node'",
     "build": "webpack",
     "test": "eslint src/**"
   },
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "brace": "^0.10.0",
-    "codemirror": "^5.24.2",
+    "chokidar": "^1.6.1",
     "koa": "^2.0.1",
     "koa-route": "^3.2.0",
     "koa-static": "^3.0.0",
