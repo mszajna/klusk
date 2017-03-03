@@ -11,9 +11,6 @@ editor.setTheme('ace/theme/tomorrow_night_eighties');
 
 const documents = {};
 
-/*global window*/
-const path = window.location.pathname.startsWith('/edit/') ? window.location.pathname.substring('/edit/'.length) : '/dev/null';
-
 const socket = io('/');
 
 editor.commands.addCommand({
@@ -24,7 +21,14 @@ editor.commands.addCommand({
   }
 });
 
-socket.on('connect', () => socket.emit('open', {path}));
+socket.on('connect', () => {
+  const prefix = '/edit/';
+  /*global window*/
+  const pathname = window.location.pathname;
+  if (pathname.startsWith(prefix)) {
+    socket.emit('open', {path: pathname.substring(prefix.length)});
+  }
+});
 
 socket.on('reconnect', () => {
   mapKeys(path => socket.emit('open', {path}) )(documents);
