@@ -57,5 +57,6 @@ socket.on('sync', ({path, op}) => {
 socket.on('saved', ({path}) => console.log('saved', path));
 
 socket.on('overwritten', ({path}) => {
+  console.log('File remotely overwritten, reloading');
   socket.emit('open', {path});
 });

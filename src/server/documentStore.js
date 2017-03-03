@@ -3,16 +3,19 @@ import {mapKeys} from 'lodash/fp';
 import {readFile, writeFile} from 'fs';
 import {watch} from 'chokidar';
 
-var documents = {};
-const watcher = watch([]);
+export default root => ({
+  root,
+  documents: {},
+  watcher: watch([])
+});
 
-export const openDocument = (path, callback) => {
+export const openDocument = ({documents, watcher}) => (path, callback) => {
   if (documents[path]) {
     callback(documents[path]);
   } else {
     readFile(path, 'utf8', (err, data) => {
       if (err) {
-        console.log(err);
+        console.log('Error opening', path, err);
         return;
       }
       console.log('Open', path);
@@ -24,19 +27,19 @@ export const openDocument = (path, callback) => {
   }
 };
 
-export const closeDocument = (path) => {
+export const closeDocument = ({documents, watcher}) => (path) => {
   console.log('Close', path);
   watcher.unwatch(path);
   delete documents[path];
 };
 
-export const saveDocument = (path, callback) => {
+export const saveDocument = ({documents}) => (path, callback) => {
   const revision = documents[path].operations.length;
   documents[path].isUpdating = true;
   writeFile(path, documents[path].document, (err) => {
     documents[path].isUpdating = false;
     if (err) {
-      console.log(err);
+      console.log('Error saving', path, err);
       return;
     }
     console.log('Saved', path);
@@ -44,23 +47,23 @@ export const saveDocument = (path, callback) => {
   });
 };
 
-export const writeDocument = (path, rev, op, callback) => {
+export const writeDocument = ({documents}) => (path, rev, op, callback) => {
   try {
     documents[path].receiveOperation(rev, TextOperation.fromJSON(op));
     callback();
   } catch (e) {
-    console.log('Error writing to document', path, e);
+    console.log('Error writing', path, e);
   }
 };
 
-export const forEachDocument = callback => {
+export const forEachDocument = ({documents}) => callback => {
   mapKeys(callback)(documents);
 };
 
-export const registerChangeWatcher = callback => {
+export const registerChangeWatcher = ({documents, watcher}) => callback => {
   watcher.on('change', path => {
     if (documents[path].isUpdating) return;
-    closeDocument(path);
+    closeDocument({documents, watcher})(path);
     callback(path);
   });
 };

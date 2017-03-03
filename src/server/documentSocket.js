@@ -1,29 +1,28 @@
-import {registerChangeWatcher, openDocument, closeDocument, writeDocument, saveDocument, forEachDocument} from './documents';
+import {registerChangeWatcher, openDocument, closeDocument, writeDocument, saveDocument, forEachDocument} from './documentStore';
 
-export default io => {
+export default (io, documentStore) => {
 
-  registerChangeWatcher(path => {
+  registerChangeWatcher(documentStore)(path => {
     io.sockets.in(path).emit('overwritten', {path});
   });
 
   return socket => {
     socket.on('open', ({path}) => {
-      openDocument(path, document => {
-        socket.join(path, () => {
-          socket.emit('load', {path, revision: document.operations.length, contents: document.document});
-        });
+      openDocument(documentStore)(path, document => {
+        socket.emit('load', {path, revision: document.operations.length, contents: document.document});
+        socket.join(path);
       });
     });
 
     socket.on('write', ({path, rev, op}) => {
-      writeDocument(path, rev, op, () => {
+      writeDocument(documentStore)(path, rev, op, () => {
         socket.emit('ack', {path});
         socket.broadcast.in(path).emit('sync', {path, op});
       });
     });
 
     socket.on('save', ({path}) => {
-      saveDocument(path, revision => {
+      saveDocument(documentStore)(path, revision => {
         io.sockets.in(path).emit('saved', {path, revision});
       });
     });
@@ -31,15 +30,15 @@ export default io => {
     socket.on('close', ({path}) => {
       socket.leave(path, () => {
         if (!io.sockets.adapter.rooms[path]) {
-          closeDocument(path);
+          closeDocument(documentStore)(path);
         }
       });
     });
 
     socket.on('disconnect', () => {
-      forEachDocument(path => {
+      forEachDocument(documentStore)(path => {
         if (!io.sockets.adapter.rooms[path]) {
-          closeDocument(path);
+          closeDocument(documentStore)(path);
         }
       });
     });
