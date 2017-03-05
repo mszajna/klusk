@@ -52,8 +52,8 @@ export const saveDocument = ({documents, resolve}) => (path, callback) => {
 
 export const writeDocument = ({documents}) => (path, rev, op, callback) => {
   try {
-    documents[path].receiveOperation(rev, TextOperation.fromJSON(op));
-    callback();
+    const transformed = documents[path].receiveOperation(rev, TextOperation.fromJSON(op));
+    callback(transformed.ops);
   } catch (e) {
     console.log('Error writing', path, e);
   }

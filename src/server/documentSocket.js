@@ -15,9 +15,9 @@ export default (io, documentStore) => {
     });
 
     socket.on('write', ({path, rev, op}) => {
-      writeDocument(documentStore)(path, rev, op, () => {
+      writeDocument(documentStore)(path, rev, op, (transOp) => {
         socket.emit('ack', {path});
-        socket.broadcast.in(path).emit('sync', {path, op});
+        socket.broadcast.in(path).emit('sync', {path, op: transOp});
       });
     });
 

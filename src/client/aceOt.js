@@ -18,28 +18,52 @@ export const fromAceDelta = ({action, start, end, lines}, doc) => {
       .retain(docLength - startIndex);
   }
 };
+//orginal from ace editor source
+var indexToPosition = function(index, startRow) {
+        var lines = this.$lines || this.getAllLines();
+        var newlineLength = this.getNewLineCharacter().length;
+        for (var i = startRow || 0, l = lines.length; i < l; i++) {
+            index -= lines[i].length + newlineLength;
+            if (index < 0)
+                return {row: i, column: index + lines[i].length + newlineLength};
+        }
+        return {row: l-1, column: lines[l-1].length};
+    };
+//patched to support negative index values
+var indexToPosition2 = function(index, startRow) {
+        var lines = this.$lines || this.getAllLines();
+        var newlineLength = this.getNewLineCharacter().length;
+        var sign = index > 0 ? 1 : -1;
+        for (var i = startRow || 0, l = lines.length; i >= 0 && i < l; i += sign) {
+            if (index >= 0 && index < lines[i].length + newlineLength) return {row: i, column: index};
+            else index -= sign * (lines[i].length + newlineLength);
+        }
+        return index < 0 ? {row: 0, column: 0} : {row: l-1, column: lines[l-1].length};
+    };
 
 export const toAceDeltas = ({ops}, doc) => {
+  doc.indexToPosition = indexToPosition2;
+  const newline = doc.getNewLineCharacter();
   const deltas = [];
+
   reduce((position, op) => {
-    if (isNumber(op)) {
-      if (op > 0) {
-        return position + op; //advance cursor
-      } else {
-        deltas.push({
-          action: 'remove',
-          start: doc.indexToPosition(position),
-          end: doc.indexToPosition(position - op) //op is negative so using double negation
-        });
-      }
-    } else {
-      deltas.push({
-        action: 'insert',
-        lines: op.split('\n'),
-        start: doc.indexToPosition(position),
-        end: doc.indexToPosition(position + op.length)
-      });
+    if (!isNumber(op)) {
+      const lines = op.split(newline);
+      const end = {
+        row: position.row + lines.length - 1,
+        column: lines[lines.length - 1].length + (lines.length > 1 ? position.column : 0)
+      };
+      deltas.push({action: 'insert', lines, start: position, end});
+      return end;
     }
-  }, 0)(ops);
+    else if (op < 0) {
+      const end = doc.indexToPosition(op + position.column, position.row);
+      deltas.push({action: 'remove', start: position, end});
+      return end;
+    }
+    else {
+      return doc.indexToPosition(op + position.column, position.row);
+    }
+  }, {row: 0, column: 0})(ops);
   return deltas;
 };
