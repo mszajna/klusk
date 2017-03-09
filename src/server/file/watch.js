@@ -1,5 +1,5 @@
-import {watch} from 'chokidar';
-import {Observable} from 'rxjs';
+import {watch} from 'chokidar'
+import {Observable} from 'rxjs'
 
 export const watchFile = (fileChanged$) => (subscribe$, unsubscribe$) =>
   subscribe$.map(path => ({isWatched: true, path}))
@@ -8,21 +8,20 @@ export const watchFile = (fileChanged$) => (subscribe$, unsubscribe$) =>
     .flatMap(isWatched$ =>
       fileChanged$.withLatestFrom(isWatched$)
         .filter(([path, isWatched]) => path === isWatched$.key && isWatched)
-        .map(([path]) => path));
-
+        .map(([path]) => path))
 
 export const subscriptions = request$ => request$
   .filter(({type}) => type === 'file/open')
-  .map(({path}) => path);
+  .map(({path}) => path)
 
 export const unsubscriptions = request$ => request$
   .filter(({type}) => type === 'file/close')
-  .map(({path}) => path);
+  .map(({path}) => path)
 
-export const overriden = watchFile$ => watchFile$.map(path => ({type: 'file/overriden', path}));
+export const overriden = watchFile$ => watchFile$.map(path => ({type: 'file/overriden', path}))
 
 export const createDirectoryWatcher = root => request$ => {
-  const watcher = watch('.', {cwd: root});
+  const watcher = watch('.', {cwd: root})
 
-  return overriden(watchFile(Observable.fromEvent(watcher, 'change'))(subscriptions(request$), unsubscriptions(request$)));
-};
+  return overriden(watchFile(Observable.fromEvent(watcher, 'change'))(subscriptions(request$), unsubscriptions(request$)))
+}
