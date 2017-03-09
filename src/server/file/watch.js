@@ -23,5 +23,5 @@ export const overriden = watchFile$ => watchFile$.map(path => ({type: 'file/over
 export const createDirectoryWatcher = root => request$ => {
   const watcher = watch('.', {cwd: root})
 
-  return overriden(watchFile(Observable.fromEvent(watcher, 'change'))(subscriptions(request$), unsubscriptions(request$)))
+  return overriden(watchFile(Observable.fromEvent(watcher, 'change').do(console.log))(subscriptions(request$), unsubscriptions(request$)))
 }

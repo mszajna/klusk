@@ -21,7 +21,7 @@ export const openDocument = (editor, path) => data$ => {
     .filter(({path: _path}) => _path === path)
     .map(({path}) => ({type: 'file/open', path}))
 
-  return Observable.of({type: 'file/open', path}).merge(reopenOnOverride$)
+  return Observable.of({type: 'file/open', path: '.'}, {type: 'file/open', path}).merge(reopenOnOverride$)
 }
 
 export const addCommand = (editor, name, bindKey) => {

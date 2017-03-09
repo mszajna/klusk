@@ -10,8 +10,8 @@ import {createChannel, webrtcSignals} from '../signalhub'
 import {createSimplePeer} from '../simplePeer'
 import {createDirectoryWatcher} from './file/watch'
 import {open, save} from './file/rw'
-import merge from '../merge'
+import {merge, log} from '../observables'
 
-const dataTransform = merge(createDirectoryWatcher('ignore'), open('ignore'), save('ignore'))
+const dataTransform = log(merge(createDirectoryWatcher('ignore'), open('ignore'), save('ignore')))
 
 createChannel(hub, channelId, webrtcSignals(clientId, createSimplePeer(() => new Peer({wrtc, objectMode: true}))(dataTransform)))
