@@ -4,9 +4,9 @@
   "description": "Klusk lets you edit remote files with your web browser",
   "main": "index.js",
   "scripts": {
-    "start": "signalhub listen -p 3001 -q & nodemon --ignore dist/ --ignore ignore/ -e js,css,html src/server/index.js --exec 'npm test && webpack && babel-node'",
+    "start": "signalhub listen -p 3001 -q & webpack --watch & nodemon --watch dist/server dist/server/server.js & live-server dist/client --port=3000 --no-browser",
     "build": "webpack",
-    "test": "mocha --compilers js:babel-register src/**/*.spec.js && eslint src/**"
+    "test": "mocha --compilers js:babel-register src/**/*.spec.js"
   },
   "author": "Maciej Szajna",
   "license": "ISC",
@@ -26,11 +26,14 @@
     "eslint-plugin-standard": "^2.1.1",
     "extract-text-webpack-plugin": "^2.0.0",
     "html-webpack-plugin": "^2.28.0",
+    "live-server": "^1.2.0",
     "mocha": "^3.2.0",
     "nodemon": "^1.11.0",
     "style-loader": "^0.13.2",
     "webpack": "^2.2.1",
-    "webpack-dev-middleware": "^1.10.1"
+    "webpack-dev-middleware": "^1.10.1",
+    "webpack-dev-server": "^2.4.1",
+    "webpack-node-externals": "^1.5.4"
   },
   "dependencies": {
     "brace": "^0.10.0",
