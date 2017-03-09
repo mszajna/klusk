@@ -8,11 +8,6 @@ export const createSimplePeer = peerFactory => requestTransform => inSignal$ => 
   const data$ = Observable.fromEvent(peer, 'data');
   const outSignal$ = Observable.fromEvent(peer, 'signal');
   const connect$ = Observable.fromEvent(peer, 'connect');
-  const error$ = Observable.fromEvent(peer, 'error');
-
-  close$.subscribe(() => console.log('close'));
-  connect$.subscribe(() => console.log('connect'));
-  error$.subscribe((error) => console.log('error', error));
 
 
   inSignal$.takeUntil(close$).subscribe(signal => peer.signal(signal));

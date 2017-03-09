@@ -63,6 +63,4 @@ socket.on('sync', ({path, op}) => {
   documents[path].applyServer(TextOperation.fromJSON(op));
 });
 
-socket.on('saved', ({path}) => console.log('saved', path));
-
 socket.on('overwritten', ({path}) => socket.emit('open', {path}));

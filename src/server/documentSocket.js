@@ -7,7 +7,7 @@ export default (io, documentStore) => {
   });
 
   return socket => {
-    socket.on('open', ({path, rev}) => {
+    socket.on('open', ({path}) => {
       openDocument(documentStore)(path, (contents, rev) => {
         socket.emit('load', {path, rev, contents});
         socket.join(path);

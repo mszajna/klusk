@@ -3,6 +3,7 @@ import Koa from 'koa';
 import route from 'koa-route';
 import serve from 'koa-static';
 import send from 'koa-send';
+import console from 'console';
 // import socketIo from 'socket.io';
 // import documentSocket from './documentSocket';
 // import {directoryStore} from './documentStore';

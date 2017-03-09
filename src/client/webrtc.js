@@ -10,8 +10,7 @@ import 'brace/theme/tomorrow_night_eighties';
 import 'brace/mode/javascript';
 
 const hub = signalhub('my-app', ['http://localhost:3001']);
-/*global window*/
-const channelId = 'test'; //window.location.hash.substring(1);
+const channelId = 'test';
 const clientId = uuid();
 const serverId = 'server';
 

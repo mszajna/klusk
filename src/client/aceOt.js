@@ -18,17 +18,6 @@ export const fromAceDelta = ({action, start, end, lines}, doc) => {
       .retain(docLength - startIndex);
   }
 };
-//orginal from ace editor source
-var indexToPosition = function(index, startRow) {
-        var lines = this.$lines || this.getAllLines();
-        var newlineLength = this.getNewLineCharacter().length;
-        for (var i = startRow || 0, l = lines.length; i < l; i++) {
-            index -= lines[i].length + newlineLength;
-            if (index < 0)
-                return {row: i, column: index + lines[i].length + newlineLength};
-        }
-        return {row: l-1, column: lines[l-1].length};
-    };
 //patched to support negative index values
 var indexToPosition2 = function(index, startRow) {
         var lines = this.$lines || this.getAllLines();

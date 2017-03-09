@@ -3,6 +3,7 @@ import {mapKeys} from 'lodash/fp';
 import {readFile, writeFile} from 'fs';
 import {watch} from 'chokidar';
 import {resolve, relative} from 'path';
+import console from 'console';
 
 export const directoryStore = root => ({
   documents: {},
