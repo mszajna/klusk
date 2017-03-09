@@ -1,4 +1,3 @@
-import {assign, omit} from 'lodash/fp';
 import {watch} from 'chokidar';
 import {Observable} from 'rxjs';
 
@@ -20,7 +19,7 @@ export const unsubscriptions = request$ => request$
   .filter(({type}) => type === 'file/close')
   .map(({path}) => path);
 
-export const overriden = watchFile$ => watchFile$.map(path => ({type: 'overriden', path}));
+export const overriden = watchFile$ => watchFile$.map(path => ({type: 'file/overriden', path}));
 
 export const createDirectoryWatcher = root => request$ => {
   const watcher = watch('.', {cwd: root});
