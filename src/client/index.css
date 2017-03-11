@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
 body {
   margin: 0;
+  font-family: 'Roboto', sans-serif;
 }
 
 #app {
@@ -15,6 +18,13 @@ body {
 
 .main {
   flex: 1;
+}
+
+.editor > div {
+  font-size: inherit;
   height: 100%;
-  font-size: 1em !important;
+}
+
+.directory {
+  padding: 0 1.5em 0 2em;
 }

@@ -6,7 +6,9 @@ export const aceEditor = applyProps =>
     displayName: 'AceEditor',
 
     render () {
-      return <div ref={el => { this.editor = ace.edit(el); applyProps(this.editor, this.props) }} />
+      return <div className={this.props.className}>
+        <div ref={el => { this.editor = ace.edit(el); applyProps(this.editor, this.props) }} />
+      </div>
     },
 
     componentWillReceiveProps (nextProps) {
@@ -23,9 +25,11 @@ export const aceEditor = applyProps =>
     }
   })
 
-export const applyProps = (editor, {className, session}) => {
-  editor.setStyle(className) // TODO: this actually ads that style, if className is modified it won't work
-  editor.setSession(session)
+export const applyProps = (editor, {session}) => {
+  // editor.setStyle(className) // TODO: this actually ads that style, if className is modified it won't work
+  if (session) {
+    editor.setSession(session)
+  }
 }
 
 export const AceEditor = aceEditor(applyProps)
