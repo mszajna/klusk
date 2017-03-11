@@ -1,27 +1,48 @@
 import {watch} from 'chokidar'
 import {Observable} from 'rxjs'
+import {assign, omit, flow} from 'lodash/fp'
+import {dirname} from 'path'
+import {ifMatch, isType, toType, wrap, unwrap} from '../../observables'
 
-export const watchFile = (fileChanged$) => (subscribe$, unsubscribe$) =>
+const updateWatched = (watched, {isWatched, path}) => isWatched
+  ? assign(watched, {[path]: true})
+  : omit(watched, path)
+
+export const watched = (subscribe$, unsubscribe$) =>
   subscribe$.map(path => ({isWatched: true, path}))
     .merge(unsubscribe$.map(path => ({isWatched: false, path})))
-    .groupBy(({path}) => path, ({isWatched}) => isWatched)
-    .flatMap(isWatched$ =>
-      fileChanged$.withLatestFrom(isWatched$)
-        .filter(([path, isWatched]) => path === isWatched$.key && isWatched)
-        .map(([path]) => path))
+    .scan(updateWatched, {})
 
-export const subscriptions = request$ => request$
-  .filter(({type}) => type === 'file/open')
-  .map(({path}) => path)
+export const ifWatched = ifMatch((path, watched) => watched[path])
 
-export const unsubscriptions = request$ => request$
-  .filter(({type}) => type === 'file/close')
-  .map(({path}) => path)
+export const ifInWatchedDirectory =
+  ifMatch((path, watched) => watched[path] || watched[dirname(path)])
 
-export const overriden = watchFile$ => watchFile$.map(path => ({type: 'file/overriden', path}))
+// API
+
+export const subscriptions = flow(isType('file/open'), unwrap('path'))
+
+export const unsubscriptions = flow(isType('file/close'), unwrap('path'))
+
+export const overriden = flow(wrap('path'), toType('file/overriden'))
+
+export const created = flow(wrap('path'), toType('file/created'))
+
+export const deleted = flow(wrap('path'), toType('file/deleted'))
 
 export const createDirectoryWatcher = root => request$ => {
   const watcher = watch('.', {cwd: root})
+  const watched$ = watched(subscriptions(request$), unsubscriptions(request$))
 
-  return overriden(watchFile(Observable.fromEvent(watcher, 'change').do(console.log))(subscriptions(request$), unsubscriptions(request$)))
+  const add$ = Observable.fromEvent(watcher, 'add')
+  const addDir$ = Observable.fromEvent(watcher, 'addDir')
+  const change$ = Observable.fromEvent(watcher, 'change')
+  const unlink$ = Observable.fromEvent(watcher, 'unlink')
+  const unlinkDir$ = Observable.fromEvent(watcher, 'unlinkDir')
+
+  const created$ = created(ifInWatchedDirectory(watched$)(add$.merge(addDir$)))
+  const overriden$ = overriden(ifWatched(watched$)(change$))
+  const deleted$ = deleted(ifInWatchedDirectory(watched$)(unlink$.merge(unlinkDir$)))
+
+  return Observable.merge(created$, overriden$, deleted$)
 }

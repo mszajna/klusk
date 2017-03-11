@@ -1,24 +1,17 @@
-import {createServer} from 'http'
-import Koa from 'koa'
-import route from 'koa-route'
-import serve from 'koa-static'
-import send from 'koa-send'
-import console from 'console'
-// import socketIo from 'socket.io';
-// import documentSocket from './documentSocket';
-// import {directoryStore} from './documentStore';
-import './webrtc'
-import './file/watch'
+import signalhub from 'signalhub'
+import wrtc from 'wrtc'
+import Peer from 'simple-peer'
 
-const app = new Koa()
-app.use(route.get('/', async function (ctx) { await send(ctx, 'dist/client/index.html') }))
-app.use(route.get('/client/*', serve('dist')))
-app.use(route.get('/edit/*', async function (ctx) { await send(ctx, 'dist/client/index.html') }))
+const hub = signalhub('my-app', ['http://localhost:3001'])
+const channelId = 'test'
+const clientId = 'server'
 
-const server = createServer(app.callback())
-// const io = socketIo(server);
-//
-// io.serveClient(false);
-// io.on('connect', documentSocket(io, directoryStore('ignore')));
-server.listen(3000)
-console.log('Listening')
+import {createChannel, webrtcSignals} from '../signalhub'
+import {createSimplePeer} from '../simplePeer'
+import {createDirectoryWatcher} from './file/watch'
+import {open, save} from './file/rw'
+import {mergePipes, log} from '../observables'
+
+const dataTransform = log(mergePipes(createDirectoryWatcher('ignore'), open('ignore'), save('ignore')))
+
+createChannel(hub, channelId, webrtcSignals(clientId, createSimplePeer(() => new Peer({wrtc, objectMode: true}))(dataTransform)))

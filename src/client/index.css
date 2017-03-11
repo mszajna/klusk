@@ -2,9 +2,19 @@ body {
   margin: 0;
 }
 
-#editor {
+#app {
   position: relative;
   width: 100vw;
   height: 100vh;
-  font-size: 1rem;
+}
+
+.horizontal {
+  display: flex;
+  height: 100%;
+}
+
+.main {
+  flex: 1;
+  height: 100%;
+  font-size: 1em !important;
 }

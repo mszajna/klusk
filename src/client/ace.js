@@ -1,19 +1,18 @@
 import {Observable} from 'rxjs'
 import ace from 'brace'
 
-export const fileContents = data$ => data$
+export const fileContent = data$ => data$
   .filter(({type}) => type === 'file/content')
 
 export const fileOverriden = data$ => data$
   .filter(({type}) => type === 'file/overriden')
 
-export const openDocument = (editor, path) => data$ => {
+export const openDocument = (path) => data$ => {
   const editSession = ace.createEditSession('', 'ace/mode/javascript')
   const document = editSession.getDocument()
   document.path = path
-  editor.setSession(editSession)
 
-  fileContents(data$)
+  fileContent(data$)
     .filter(({path: _path}) => _path === path)
     .subscribe(({content}) => document.setValue(content))
 
@@ -21,7 +20,7 @@ export const openDocument = (editor, path) => data$ => {
     .filter(({path: _path}) => _path === path)
     .map(({path}) => ({type: 'file/open', path}))
 
-  return Observable.of({type: 'file/open', path: '.'}, {type: 'file/open', path}).merge(reopenOnOverride$)
+  return Observable.of({type: 'file/open', path}).merge(reopenOnOverride$)
 }
 
 export const addCommand = (editor, name, bindKey) => {
