@@ -23,7 +23,7 @@ export const withLatestFrom = b$ => a$ => a$
 
 export const isType = (type, unwrap) => filter(({type: _type}) => _type === type)
 
-export const toType = (type, wrap) => map(({rest}) => ({type, ...rest}))
+export const toType = (type, wrap) => map(rest => ({type, ...rest}))
 
 export const unwrap = property => map(({[property]: value}) => value)
 

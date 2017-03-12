@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs'
 import {readFile, writeFile, readdir, stat} from './fs'
-import {resolve, relative} from 'path'
+import {resolve, relative, basename} from 'path'
 import {flow, map, keyBy} from 'lodash/fp'
 
 const fileDescription = realPath =>
@@ -8,11 +8,13 @@ const fileDescription = realPath =>
 
 const directoryListing = realPath =>
   readdir(realPath).flatMap(files =>
-    Observable.forkJoin(map(file => fileDescription(resolve(realPath, file)))(files)))
+    files.length
+      ? Observable.forkJoin(map(file => fileDescription(resolve(realPath, file)))(files))
+      : Observable.of([]))
 
 const toRelativeListing = (root, dir) =>
   flow(
-    map(({realPath, isDir}) => ({isDir, path: relative(root, realPath), name: relative(dir, realPath)})),
+    map(({realPath, isDir}) => ({isDir, path: relative(root, realPath), name: basename(realPath)})),
     keyBy(({name}) => name)
   )
 

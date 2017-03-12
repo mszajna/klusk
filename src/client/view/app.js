@@ -14,6 +14,6 @@ const Directory = ({files, onClick, className}) =>
 
 export const App = (handlers, state) =>
   <div className="horizontal">
-    <Directory className="left directory" files={state.directory} onClick={handlers.directoryClick} />
+    <Directory className="left directory" files={state.directory.files} onClick={handlers.directoryClick} />
     <AceEditor className="main editor" session={state.editor.session} />
   </div>
