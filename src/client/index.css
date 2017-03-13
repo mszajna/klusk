@@ -26,6 +26,14 @@ body {
   height: 100%;
 }
 
-.directory {
+.directory-listing {
   padding: 0 1.5em 0 2em;
+}
+
+.directory {
+  color: blue;
+}
+
+.unfolded {
+  color: red;
 }

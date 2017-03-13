@@ -2,7 +2,7 @@ import {assign, omit, pick, keys, intersection} from 'lodash/fp'
 
 const updateListing = newListing => oldListing => {
   const retainedFiles = intersection(keys(oldListing), keys(newListing))
-  return assign(newListing, pick(oldListing, retainedFiles))
+  return assign(newListing, pick(retainedFiles)(oldListing))
 }
 
 const directoryReducer = (directory, {type, path, ...action}) => {
