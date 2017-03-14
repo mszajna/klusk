@@ -36,6 +36,36 @@ const directoryReducer = (directory, {type, path, ...action}) => {
             }
           }
         }
+      case 'file/open':
+        if (name === '.') {
+          return {
+            ...directory,
+            open: true
+          }
+        } else {
+          return {
+            ...directory,
+            files: {
+              ...directory.files,
+              [name]: {...directory.files[name], open: true}
+            }
+          }
+        }
+      case 'file/close':
+        if (name === '.') {
+          return {
+            ...directory,
+            open: false
+          }
+        } else {
+          return {
+            ...directory,
+            files: {
+              ...directory.files,
+              [name]: {...directory.files[name], open: false}
+            }
+          }
+        }
       case 'file/created':
         return {
           ...directory,
@@ -58,6 +88,5 @@ const directoryReducer = (directory, {type, path, ...action}) => {
 const initial = {files: {}}
 
 export const directoryListing = data$ => data$
-  .filter(({type}) => type === 'dir/list' || type === 'file/created' || type === 'file/deleted')
   .scan(directoryReducer, initial)
   .startWith(initial)

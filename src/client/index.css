@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css');
 
 body {
   margin: 0;
@@ -21,6 +21,10 @@ body {
   flex: 1;
 }
 
+.left {
+  width: 200px;
+}
+
 .editor {
   height: 100%;
 }
@@ -31,13 +35,20 @@ body {
 }
 
 .directory-listing {
-  padding: 0 1.5em 0 2em;
+  border-right: 1px solid lightgray;
+  overflow: auto;
 }
 
-.directory {
-  color: blue;
+.directory-listing ul {
+  list-style-type: none;
+  padding-left: 1.5em;
 }
 
-.unfolded {
-  color: red;
+.directory-listing .name {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.directory-listing .icon {
+  width: 1.5em;
 }
