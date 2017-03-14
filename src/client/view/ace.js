@@ -25,6 +25,7 @@ export const aceEditor = (createEditor, applyProps) =>
 
 export const createEditor = el => {
   const editor = ace.edit(el)
+  editor.$blockScrolling = Infinity
 
   editor.commands.addCommand({
     name: 'save',

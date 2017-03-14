@@ -7,7 +7,7 @@ import ace from 'brace'
 
 import {log} from '../observables'
 import {directoryListing} from './directory'
-import {fileContent} from './ace'
+import {fileContent, fileOverriden} from './ace'
 
 // export const dataTransform = log(mergePipes(saveCurrentDocument(editor), openDocument(editor, 'test.js')))
 
@@ -49,7 +49,8 @@ const withDocumentsAndSessions = (data$, open$, close$, save$) => {
     Observable.of({type: 'file/open', path: '.'}),
     open$.map(({path}) => ({type: 'file/open', path})),
     close$.map(({path}) => ({type: 'file/close', path})),
-    save$.withLatestFrom(activeFile$, (save, file) => file).map(({path}) => ({type: 'file/save', path, content: documents[path].getValue()}))
+    save$.withLatestFrom(activeFile$, (save, file) => file).map(({path}) => ({type: 'file/save', path, content: documents[path].getValue()})),
+    fileOverriden(data$).filter(({path}) => documents[path]).map(({path}) => ({type: 'file/open', path}))
   )
 
   return {
