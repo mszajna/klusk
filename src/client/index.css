@@ -21,6 +21,10 @@ body {
   flex: 1;
 }
 
+.editor {
+  height: 100%;
+}
+
 .editor > div {
   font-size: inherit;
   height: 100%;

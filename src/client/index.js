@@ -11,10 +11,10 @@ import {fileContent} from './ace'
 
 // export const dataTransform = log(mergePipes(saveCurrentDocument(editor), openDocument(editor, 'test.js')))
 
-let documents = {}
-let sessions = {}
+const withDocumentsAndSessions = (data$, open$, close$, save$) => {
+  let documents = {}
+  let sessions = {}
 
-const withDocumentsAndSessions = (data$, open$, close$) => {
   open$
     .filter(({isDir}) => !isDir)
     .map(({path}) => path)
@@ -38,32 +38,48 @@ const withDocumentsAndSessions = (data$, open$, close$) => {
     }
   })
 
-  return Observable.merge(
+  const activeFile$ = open$
+    .filter(({isDir}) => !isDir)
+
+  const activeSession$ = activeFile$
+    .map(({path}) => sessions[path])
+    .startWith(undefined)
+
+  const documentRequest$ = Observable.merge(
     Observable.of({type: 'file/open', path: '.'}),
     open$.map(({path}) => ({type: 'file/open', path})),
-    close$.map(({path}) => ({type: 'file/close', path}))
+    close$.map(({path}) => ({type: 'file/close', path})),
+    save$.withLatestFrom(activeFile$, (save, file) => file).map(({path}) => ({type: 'file/save', path, content: documents[path].getValue()}))
   )
+
+  return {
+    documentRequest$,
+    activeSession$
+  }
 }
 
 const dataTransform = data$ => {
-  const directoryClick$ = new Subject()
+  const open$ = new Subject()
+  const close$ = new Subject()
+  const save$ = new Subject()
 
-  const documentEvent$ = withDocumentsAndSessions(data$, directoryClick$, Observable.never())
+  const {documentRequest$, activeSession$} = withDocumentsAndSessions(data$, open$, close$, save$)
 
   const state$ = Observable.combineLatest(
-    directoryListing(data$).startWith({}),
-    directoryClick$.filter(({isDir}) => !isDir).map(({path}) => path).startWith(undefined),
+    directoryListing(data$),
+    activeSession$,
     data$, // TODO: this is a hack to be sure state updates as sessions object can be updated at any point in time
-    (directory, path, data) => ({directory, editor: {session: sessions[path]}})
+    (directory, session, data) => ({directory, editor: {session}})
   )
 
   const handlers = {
-    directoryClick: directoryClick$.next.bind(directoryClick$)
+    directoryClick: open$.next.bind(open$),
+    onSave: save$.next.bind(save$)
   }
 
-  state$.subscribe(state => render(App(handlers, state), document.getElementById('app')))
+  state$.subscribe(state => render(App({handlers, state}), document.getElementById('app')))
 
-  return documentEvent$
+  return documentRequest$
 }
 
 createWebrtcConnection(log(dataTransform))

@@ -13,8 +13,12 @@ const Directory = ({files, onClick, className}) =>
     )(entries(files))}
   </ul>
 
-export const App = (handlers, state) =>
+export const App = ({handlers: {directoryClick, onSave}, state: {directory, editor}}) =>
   <div className="horizontal">
-    <Directory className="left directory-listing" files={state.directory.files} onClick={handlers.directoryClick} />
-    <AceEditor className="main editor" session={state.editor.session} />
+    <Directory className="left directory-listing" files={directory.files} onClick={directoryClick} />
+    <div className="main">
+      {editor.session
+      ? <div className="editor"><AceEditor session={editor.session} onSave={onSave} /></div>
+      : undefined}
+    </div>
   </div>

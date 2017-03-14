@@ -55,6 +55,9 @@ const directoryReducer = (directory, {type, path, ...action}) => {
   }
 }
 
+const initial = {files: {}}
+
 export const directoryListing = data$ => data$
   .filter(({type}) => type === 'dir/list' || type === 'file/created' || type === 'file/deleted')
-  .scan(directoryReducer, {files: {}})
+  .scan(directoryReducer, initial)
+  .startWith(initial)

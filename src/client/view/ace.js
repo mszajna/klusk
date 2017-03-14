@@ -1,14 +1,12 @@
 import React from 'react'
 import ace from 'brace'
 
-export const aceEditor = applyProps =>
+export const aceEditor = (createEditor, applyProps) =>
   React.createClass({
     displayName: 'AceEditor',
 
     render () {
-      return <div className={this.props.className}>
-        <div ref={el => { this.editor = ace.edit(el); applyProps(this.editor, this.props) }} />
-      </div>
+      return <div ref={el => { this.editor = createEditor(el); applyProps(this.editor, this.props) }} />
     },
 
     componentWillReceiveProps (nextProps) {
@@ -25,11 +23,22 @@ export const aceEditor = applyProps =>
     }
   })
 
-export const applyProps = (editor, {session}) => {
-  // editor.setStyle(className) // TODO: this actually ads that style, if className is modified it won't work
-  if (session) {
-    editor.setSession(session)
-  }
+export const createEditor = el => {
+  const editor = ace.edit(el)
+
+  editor.commands.addCommand({
+    name: 'save',
+    bindKey: {win: 'Ctrl-s', mac: 'Command-s'},
+    exec: () => {
+      editor.runOnSave()
+    }
+  })
+  return editor
 }
 
-export const AceEditor = aceEditor(applyProps)
+export const applyProps = (editor, {session, onSave}) => {
+  editor.setSession(session)
+  editor.runOnSave = () => onSave ? onSave() : undefined
+}
+
+export const AceEditor = aceEditor(createEditor, applyProps)
