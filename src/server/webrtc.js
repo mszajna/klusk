@@ -1,15 +1,15 @@
-import signalhub from 'signalhub'
+import Ably from 'ably'
 import wrtc from 'wrtc'
 import Peer from 'simple-peer'
-import {publish, subscribe} from '../signalhub'
+import {publish, subscribe} from '../ably'
 import {serverSignalling} from '../signalling'
 import {createSimplePeer} from '../simplePeer'
 
-const hub = signalhub('my-app', ['http://localhost:3001'])
-const localId = 'server'
-const sub = subscribe(hub, localId)
-const pub = remoteId => publish(hub, remoteId)
+export const createWebrtcConnection = (localId, dataTransform) => {
+  const ably = new Ably.Realtime('xF2RJw.5T2wEg:AIGlaHQaqIMWPw_x')
+  const sub = subscribe(ably, localId, 'signal')
+  const pub = remoteId => publish(ably, remoteId, 'signal')
 
-export const createWebrtcConnection = dataTransform =>
-  serverSignalling(localId, createSimplePeer(() => new Peer({wrtc, objectMode: true}))(dataTransform))(sub)
+  return serverSignalling(localId, createSimplePeer(() => new Peer({wrtc, objectMode: true}))(dataTransform))(sub)
     .subscribe(({remoteId, signal$}) => pub(remoteId)(signal$))
+}

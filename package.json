@@ -4,7 +4,7 @@
   "description": "Klusk lets you edit remote files with your web browser",
   "main": "index.js",
   "scripts": {
-    "start": "signalhub listen -p 3001 -q & webpack --watch & live-server dist/client --port=3000 --no-browser & nodemon --watch dist/server dist/server/server.js",
+    "start": "webpack --watch & live-server dist/client --port=3000 --no-browser & nodemon --watch dist/server dist/server/server.js --id server",
     "build": "webpack",
     "test": "mocha --compilers js:babel-register src/**/*.spec.js"
   },
@@ -38,10 +38,12 @@
     "webpack-node-externals": "^1.5.4"
   },
   "dependencies": {
+    "ably": "^1.0.1",
     "brace": "^0.10.0",
     "chokidar": "^1.6.1",
     "classnames": "^2.2.5",
     "lodash": "^4.17.4",
+    "minimist": "^1.2.0",
     "ot": "0.0.15",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
@@ -51,7 +53,9 @@
     "simple-peer": "^7.0.0",
     "socket.io": "^1.7.3",
     "socket.io-client": "^1.7.3",
-    "uuid": "^3.0.1",
+    "uuid": "^3.0.1"
+  },
+  "peerDependencies": {
     "wrtc": "0.0.61"
   }
 }

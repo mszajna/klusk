@@ -82,4 +82,7 @@ const dataTransform = data$ => {
   return documentRequest$
 }
 
-createWebrtcConnection(log(dataTransform))
+/* global window */
+const remoteId = window.location.hash.substring(1)
+
+createWebrtcConnection(remoteId, log(dataTransform))

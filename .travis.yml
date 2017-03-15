@@ -6,3 +6,10 @@ script: npm run build
 cache:
   directories:
     - node_modules
+deploy:
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
+    on:
+      branch: master
+    local_dir: dist/client
