@@ -2,7 +2,7 @@ dist: trusty
 language: node_js
 node_js:
   - node
-script: npm run build && npm test
+script: npm run build
 cache:
   directories:
     - node_modules
