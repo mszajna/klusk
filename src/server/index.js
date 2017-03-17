@@ -11,6 +11,6 @@ const localId = id || uuid()
 const baseUrl = url || 'https://mszajna.github.io/klusk/'
 console.log(`${baseUrl}#${localId}`)
 
-const dataTransform = log(mergePipes(createDirectoryWatcher('ignore'), open('ignore'), save('ignore')))
+const dataTransform = log(mergePipes(createDirectoryWatcher('.'), open('.'), save('.')))
 
-createWebrtcConnection(id || uuid(), dataTransform)
+createWebrtcConnection(localId, dataTransform)

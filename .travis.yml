@@ -13,3 +13,8 @@ deploy:
     on:
       branch: master
     local_dir: dist/client
+  - provider: npm
+    skip_cleanup: true
+    api_key: $NPM_TOKEN
+    on:
+      tags: true

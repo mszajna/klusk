@@ -2,14 +2,25 @@
   "name": "klusk",
   "version": "0.1.0",
   "description": "Klusk lets you edit remote files with your web browser",
-  "main": "index.js",
+  "homepage": "https://mszajna.github.io/klusk/",
+  "author": {
+    "name": "Maciej Szajna",
+    "email": "maciekszajna@gmail.com"
+  },
+  "license": "MIT",
+  "bin": "dist/server/server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mszajna/klusk"
+  },
+  "bugs": {
+    "url": "https://github.com/mszajna/klusk/issues"
+  },
   "scripts": {
-    "start": "webpack --watch & live-server dist/client --port=3000 --no-browser & nodemon --watch dist/server dist/server/server.js --id server",
+    "start": "webpack --watch & live-server dist/client --port=3000 --no-browser & nodemon --watch dist/server dist/server/server.js --url http://localhost:3000/",
     "build": "webpack",
     "test": "mocha --compilers js:babel-register src/**/*.spec.js"
   },
-  "author": "Maciej Szajna",
-  "license": "ISC",
   "devDependencies": {
     "babel-cli": "^6.23.0",
     "babel-eslint": "^7.1.1",
@@ -53,6 +64,7 @@
     "simple-peer": "^7.0.0",
     "socket.io": "^1.7.3",
     "socket.io-client": "^1.7.3",
+    "source-map-support": "^0.4.13",
     "uuid": "^3.0.1"
   },
   "peerDependencies": {

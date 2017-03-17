@@ -33,7 +33,7 @@ export const created = flow(map(fileDetails), toType('file/created'))
 export const deleted = toType('file/deleted')
 
 export const createDirectoryWatcher = root => request$ => {
-  const watcher = watch('.', {cwd: root, ignoreInitial: true})
+  const watcher = watch('.', {cwd: root, ignoreInitial: true, ignored: 'node_modules/**'})
   const watched$ = watched(subscriptions(request$), unsubscriptions(request$))
 
   const pathAndStats = (path, stats) => ({path, stats})

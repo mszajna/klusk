@@ -12,6 +12,9 @@ module.exports = (env) => [{
     filename: 'server.js',
     path: path.resolve(__dirname, 'dist/server')
   },
+  plugins: [
+    new webpack.BannerPlugin({banner: '#!/usr/bin/env node\nrequire("source-map-support").install();', raw: true})
+  ],
   module: {
     rules: [
       {
