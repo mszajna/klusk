@@ -1,5 +1,5 @@
 import React from 'react'
-import {entries, map} from 'lodash/fp'
+import {entries, map, sortBy, flow} from 'lodash/fp'
 import {AceEditor} from './ace'
 import '../index.css'
 
@@ -11,9 +11,14 @@ const iconClass = ({isDir, open}) => 'icon fa ' + (
     : 'fa-file-o'
   )
 
+const orders = [
+  ([, {isDir}]) => !isDir,
+  ([name]) => name
+]
+
 const Directory = ({files, onFileClick, className}) =>
   <ul>
-    {map(([key, file]) =>
+    {flow(entries, sortBy(orders), map(([key, file]) =>
       <li key={key}>
         <span className="name" onClick={() => onFileClick(file)}>
           <i className={iconClass(file)} aria-hidden="true" />
@@ -21,7 +26,7 @@ const Directory = ({files, onFileClick, className}) =>
         </span>
         {file.open ? <Directory files={file.files} onFileClick={onFileClick} /> : undefined}
       </li>
-    )(entries(files))}
+    ))(files)}
   </ul>
 
 export const App = ({handlers: {onFileClick, onSave}, state: {directory, editor}}) =>

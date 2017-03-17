@@ -7,6 +7,7 @@ import ace from 'brace'
 import {log} from '../observables'
 import {directoryListing} from './directory'
 import {fileContent, fileOverriden} from './ace'
+import editModes from './editModes'
 
 const withDocumentsAndSessions = (data$, open$, close$, save$, activateFile$) => {
   let documents = {}
@@ -17,7 +18,7 @@ const withDocumentsAndSessions = (data$, open$, close$, save$, activateFile$) =>
     .map(({path}) => path)
     .subscribe(path => {
       if (!documents[path]) {
-        sessions[path] = ace.createEditSession('', 'ace/mode/text')
+        sessions[path] = ace.createEditSession('', editModes(path))
         documents[path] = sessions[path].getDocument()
       } else if (!sessions[path]) {
         sessions[path] = ace.createEditSession(documents[path])
