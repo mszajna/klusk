@@ -11,5 +11,8 @@ export const createWebrtcConnection = (localId, dataTransform) => {
   const pub = remoteId => publish(ably, remoteId, 'signal')
 
   return serverSignalling(localId, createSimplePeer(() => new Peer({wrtc, objectMode: true}))(dataTransform))(sub)
-    .subscribe(({remoteId, signal$}) => pub(remoteId)(signal$))
+    .subscribe(({remoteId, signal$}) => {
+      console.log('Client connected', remoteId)
+      return pub(remoteId)(signal$)
+    })
 }

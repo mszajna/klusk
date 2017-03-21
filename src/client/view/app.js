@@ -8,7 +8,7 @@ const iconClass = ({isDir, open}) => 'icon fa ' + (
     ? open
       ? 'fa-folder-open-o'
       : 'fa-folder-o'
-    : 'fa-file-o'
+    : ''
   )
 
 const orders = [
@@ -29,9 +29,10 @@ const Directory = ({files, onFileClick, className}) =>
     ))(files)}
   </ul>
 
-export const App = ({handlers: {onFileClick, onSave}, state: {directory, editor}}) =>
+export const App = ({handlers: {onFileClick, onSave}, state: {directory, editor, connection}}) =>
   <div className="horizontal">
     <div className="left directory-listing">
+      <div>{connection}</div>
       <Directory files={directory.files} onFileClick={onFileClick} />
     </div>
     <div className="main">

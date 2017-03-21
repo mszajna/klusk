@@ -1,5 +1,4 @@
 import {Observable} from 'rxjs'
-import json from './json'
 /* global JSON */
 
 export const createSimplePeer = peerFactory => requestTransform => inSignal$ => {
@@ -10,9 +9,8 @@ export const createSimplePeer = peerFactory => requestTransform => inSignal$ => 
   const connect$ = Observable.fromEvent(peer, 'connect')
 
   inSignal$.takeUntil(close$).subscribe(signal => peer.signal(signal))
-  connect$.subscribe(() => {
-    json(requestTransform)(data$).takeUntil(close$).subscribe(response => peer.send(response))
-  })
+  const {data$: outData$} = requestTransform({data$: data$.map(JSON.parse), connect$, disconnect$: close$})
+  outData$.map(JSON.stringify).skipUntil(connect$).takeUntil(close$).subscribe(response => peer.send(response))
 
   return outSignal$.takeUntil(close$)
 }

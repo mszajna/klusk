@@ -27,6 +27,10 @@ export const createEditor = el => {
   const editor = ace.edit(el)
   editor.$blockScrolling = Infinity
 
+  editor.setOptions({
+    enableBasicAutocompletion: true
+  })
+
   editor.commands.addCommand({
     name: 'save',
     bindKey: {win: 'Ctrl-s', mac: 'Command-s'},

@@ -4,12 +4,11 @@ import {App} from './view/app'
 import {render} from 'react-dom'
 import ace from 'brace'
 
-import {log} from '../observables'
 import {directoryListing} from './directory'
 import {fileContent, fileOverriden} from './ace'
 import editModes from './editModes'
 
-const withDocumentsAndSessions = (data$, open$, close$, save$, activateFile$) => {
+const withDocumentsAndSessions = ({data$, connect$, open$, close$, save$, activateFile$}) => {
   let documents = {}
   let sessions = {}
 
@@ -19,6 +18,7 @@ const withDocumentsAndSessions = (data$, open$, close$, save$, activateFile$) =>
     .subscribe(path => {
       if (!documents[path]) {
         sessions[path] = ace.createEditSession('', editModes(path))
+        sessions[path].setOptions({tabSize: 2})
         documents[path] = sessions[path].getDocument()
       } else if (!sessions[path]) {
         sessions[path] = ace.createEditSession(documents[path])
@@ -41,7 +41,7 @@ const withDocumentsAndSessions = (data$, open$, close$, save$, activateFile$) =>
     .startWith(undefined)
 
   const documentRequest$ = Observable.merge(
-    Observable.of({type: 'file/open', path: '.'}),
+    connect$.map(() => ({type: 'file/open', path: '.'})),
     open$.map(({path}) => ({type: 'file/open', path})),
     close$.map(({path}) => ({type: 'file/close', path})),
     save$.withLatestFrom(activateFile$, (save, file) => file).map(({path}) => ({type: 'file/save', path, content: documents[path].getValue()})),
@@ -54,7 +54,7 @@ const withDocumentsAndSessions = (data$, open$, close$, save$, activateFile$) =>
   }
 }
 
-const dataTransform = data$ => {
+const dataTransform = ({data$, connect$, disconnect$}) => {
   const save$ = new Subject()
   const fileClick$ = new Subject()
   const open$ = fileClick$
@@ -64,13 +64,15 @@ const dataTransform = data$ => {
   const activateFile$ = fileClick$
     .filter(({isDir}) => !isDir)
 
-  const {documentRequest$, activeSession$} = withDocumentsAndSessions(data$, open$, close$, save$, activateFile$)
+  const {documentRequest$, activeSession$} = withDocumentsAndSessions({data$, connect$, open$, close$, save$, activateFile$})
+
+  const connection$ = connect$.map(() => 'connected').merge(disconnect$.map(() => 'disconnected')).startWith('connecting')
 
   const state$ = Observable.combineLatest(
     directoryListing(data$.merge(documentRequest$)),
     activeSession$,
-    data$, // TODO: this is a hack to be sure state updates as sessions object can be updated at any point in time
-    (directory, session, data) => ({directory, editor: {session}})
+    connection$,
+    (directory, session, connection) => ({directory, editor: {session}, connection})
   )
 
   const handlers = {
@@ -80,10 +82,12 @@ const dataTransform = data$ => {
 
   state$.subscribe(state => render(App({handlers, state}), document.getElementById('app')))
 
-  return documentRequest$
+  return ({
+    data$: documentRequest$
+  })
 }
 
 /* global window */
 const remoteId = window.location.hash.substring(1)
 
-createWebrtcConnection(remoteId, log(dataTransform))
+createWebrtcConnection(remoteId, dataTransform)
