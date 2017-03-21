@@ -1,4 +1,4 @@
-# klusk [![npm](https://img.shields.io/npm/v/klusk.svg)](https://github.com/mszajna/klusk) [![Build Status](https://img.shields.io/travis/mszajna/klusk.svg)](https://github.com/mszajna/klusk)
+# klusk [![npm](https://img.shields.io/npm/v/klusk.svg)](https://www.npmjs.com/package/klusk) [![Build Status](https://img.shields.io/travis/mszajna/klusk.svg)](https://travis-ci.org/mszajna/klusk)
 
 A web editor for your local files
 
