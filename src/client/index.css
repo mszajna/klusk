@@ -52,3 +52,7 @@ body {
 .directory-listing .icon {
   width: 1.5em;
 }
+
+.disconnected {
+  background-color: gray;
+}

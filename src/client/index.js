@@ -20,6 +20,7 @@ const withDocumentsAndSessions = ({data$, connect$, open$, close$, save$, activa
         sessions[path] = ace.createEditSession('', editModes(path))
         sessions[path].setOptions({tabSize: 2})
         documents[path] = sessions[path].getDocument()
+        documents[path].on('change', console.log)
       } else if (!sessions[path]) {
         sessions[path] = ace.createEditSession(documents[path])
       }

@@ -30,7 +30,7 @@ const Directory = ({files, onFileClick, className}) =>
   </ul>
 
 export const App = ({handlers: {onFileClick, onSave}, state: {directory, editor, connection}}) =>
-  <div className="horizontal">
+  <div className={`horizontal ${connection}`}>
     <div className="left directory-listing">
       <div>{connection}</div>
       <Directory files={directory.files} onFileClick={onFileClick} />
