@@ -13,7 +13,7 @@ const directoryReducer = (directory, {type, path, ...action}) => {
         ...directory,
         files: {
           ...directory.files,
-          [name]: directoryReducer(directory.files[name], {type, path: rest, ...action})
+          [name]: directoryReducer(directory.files[name], {type, path: rest, fullPath: path, ...action})
         }
       }
     } else {
@@ -71,7 +71,7 @@ const directoryReducer = (directory, {type, path, ...action}) => {
           ...directory,
           files: {
             ...directory.files,
-            [name]: {...action}
+            [name]: {path: action.fullPath || path, ...action}
           }
         }
       case 'file/deleted':
