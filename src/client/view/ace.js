@@ -1,5 +1,8 @@
 import React from 'react'
 import ace from 'brace'
+import 'brace/ext/language_tools.js'
+
+ace.acequire('ace/ext/language_tools')
 
 export const aceEditor = (createEditor, applyProps) =>
   React.createClass({
@@ -28,7 +31,8 @@ export const createEditor = el => {
   editor.$blockScrolling = Infinity
 
   editor.setOptions({
-    enableBasicAutocompletion: true
+    enableBasicAutocompletion: true,
+    enableLiveAutocompletion: true
   })
 
   editor.commands.addCommand({
