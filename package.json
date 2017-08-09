@@ -67,9 +67,7 @@
     "socket.io": "^1.7.3",
     "socket.io-client": "^1.7.3",
     "source-map-support": "^0.4.13",
-    "uuid": "^3.0.1"
-  },
-  "peerDependencies": {
-    "wrtc": "0.0.61"
+    "uuid": "^3.0.1",
+    "wrtc": "0.0.62"
   }
 }
