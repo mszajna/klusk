@@ -7,7 +7,7 @@ import console from 'console'
 
 export const directoryStore = root => ({
   documents: {},
-  watcher: watch([]),
+  watcher: watch([], {ignored: ['node_modules', '.git']}),
   resolve: path => resolve(root, path),
   relative: localPath => relative(root, localPath)
 })
