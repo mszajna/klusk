@@ -17,7 +17,7 @@
     "url": "https://github.com/mszajna/klusk/issues"
   },
   "scripts": {
-    "start": "npm test -- --watch & npm run build -- --watch & live-server dist/client --port=3000 --no-browser & nodemon --watch dist/server dist/server/server.js --url http://localhost:3000/",
+    "start": "npm test -- --watch & npm run build -- --watch & live-server dist/client --port=3000 --no-browser & nodemon --watch dist/server dist/server/server.js --url http://localhost:3000/ --id test",
     "build": "webpack",
     "test": "mocha --require babel-register src/**/*.spec.js"
   },
