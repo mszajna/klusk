@@ -1,11 +1,12 @@
 import React from 'react'
+import createReactClass from 'create-react-class'
 import ace from 'brace'
 import 'brace/ext/language_tools.js'
 
 ace.acequire('ace/ext/language_tools')
 
 export const aceEditor = (createEditor, applyProps) =>
-  React.createClass({
+  createReactClass({
     displayName: 'AceEditor',
 
     render () {

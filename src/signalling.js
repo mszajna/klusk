@@ -8,6 +8,6 @@ export const serverSignalling = (localId, signalTransform) => data$ => data$
 
 export const clientSignalling = (localId, remoteId, signalTransform) => data$ =>
   signalTransform(data$
-      .filter(({from}) => from === remoteId)
-      .map(({signal}) => signal))
+    .filter(({from}) => from === remoteId)
+    .map(({signal}) => signal))
     .map(signal => ({from: localId, signal}))

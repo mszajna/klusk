@@ -61,7 +61,6 @@ describe('AceOperation', () => {
   const compose = (ops1, ops2) => AceOperation.fromJSON(ops1).compose(AceOperation.fromJSON(ops2)).toJSON()
 
   describe('compose', () => {
-
     // property('apply(apply(D, A), B) === apply(D, compose(A, B))') // requires D.length === A.source && A.target = B.source
     const test = (d, a, b) => {
       const da = apply(apply(d, a), b)
@@ -143,7 +142,6 @@ describe('AceOperation', () => {
   const transform = (a, b) => { const [ap, bp] = AceOperation.transform(AceOperation.fromJSON(a), AceOperation.fromJSON(b)); return [ap.toJSON(), bp.toJSON()] }
 
   describe('transform', () => {
-
     // property('[A1, B1] = transform(A, B); apply(apply(D, A), B1) === apply(apply(D, B), A1)') // requires D.length === A.source === B.source
     const test = (d, a, b, e) => {
       const [aPrime, bPrime] = transform(a, b)
@@ -180,7 +178,7 @@ describe('AceOperation', () => {
       test(['ipsum'], ['lorem', 1], [-1], ['lorem'])
     })
 
-    it('insert and line operation', () =>  {
+    it('insert and line operation', () => {
       test(['ipsum'], ['lorem', 1], [[5, ' dolor']], ['lorem', 'ipsum dolor'])
     })
 
@@ -249,11 +247,11 @@ describe('AceOperation', () => {
     it('deletes at the end of a line', () => {
       test(['lorem'], {action: 'delete', start: {row: 0, column: 5}, end: {row: 0, column: 11}, lines: [' ipsum']}, [[5, -6]])
     })
-    
+
     it('deletes in the middle of a line', () => {
       test(['lorem dolor'], {action: 'delete', start: {row: 0, column: 5}, end: {row: 0, column: 11}, lines: [' ipsum']}, [[5, -6, 6]])
     })
-    
+
     it('deletes a whole line', () => {
       test([''], {action: 'delete', start: {row: 0, column: 0}, end: {row: 1, column: 0}, lines: ['lorem', '']}, [-1, 1])
     })
@@ -262,7 +260,7 @@ describe('AceOperation', () => {
       test(['lorem', 'ipsum consectetur', 'adipiscing'], {action: 'delete', start: {row: 1, column: 6}, end: {row: 3, column: 5}, lines: ['dolor', 'sit', 'amet ']}, [1, [6, -5], -1, [-5, 11], 1])
     })
   })
-  
+
   describe('toAceDeltas', () => {
     it('works')
   })

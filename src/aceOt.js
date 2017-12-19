@@ -1,7 +1,7 @@
 import {TextOperation} from 'ot'
 import {reduce, isNumber} from 'lodash/fp'
 
-//Ace Operation
+// Ace Operation
 export const isRetain = op => typeof op === 'number' && op > 0
 export const isDelete = op => typeof op === 'number' && op < 0
 export const isInsert = op => typeof op === 'string'
@@ -12,8 +12,8 @@ export const sourceLength = reduce((sum, op) => sum + (isRetain(op) ? op : isDel
 export const targetLength = reduce((sum, op) => sum + (isRetain(op) || isDelete(op) ? op : 1), 0)
 export const splitOp = (op, index) =>
   isRetain(op) ? [index, op - index]
-  : isDelete(op) ? [-index, op + index]
-  : [op]
+    : isDelete(op) ? [-index, op + index]
+      : [op]
 
 export class AceOperation {
   /*
@@ -26,9 +26,9 @@ export class AceOperation {
       - negative number for deleting characters
       - string for inserting characters
   */
-  constructor(ops) { this.ops = ops || [] }
-  
-  retain(numberOfLines) {
+  constructor (ops) { this.ops = ops || [] }
+
+  retain (numberOfLines) {
     if (numberOfLines === 0) {
       return this
     }
@@ -37,12 +37,12 @@ export class AceOperation {
       ? new AceOperation([...this.ops.slice(0, -1), lastOp + numberOfLines])
       : new AceOperation([...this.ops, numberOfLines])
   }
-  
-  insert(line) {
+
+  insert (line) {
     return new AceOperation([...this.ops, line])
   }
-  
-  ['delete'](numberOfLines) {
+
+  ['delete'] (numberOfLines) {
     if (numberOfLines === 0) {
       return this
     }
@@ -51,12 +51,12 @@ export class AceOperation {
       ? new AceOperation([...this.ops.slice(0, -1), lastOp - numberOfLines])
       : new AceOperation([...this.ops, -numberOfLines])
   }
-  
-  modify(op) {
+
+  modify (op) {
     return new AceOperation([...this.ops, op])
   }
 
-  apply(document) { // TODO: optimize
+  apply (document) { // TODO: optimize
     let buffer = [], cursor = 0
     for (let i = 0; i < this.ops.length; i++) {
       const op = this.ops[i]
@@ -81,7 +81,7 @@ export class AceOperation {
   }
 
   // apply(apply(D, A), B) === apply(D, compose(A, B))
-  compose(other) {
+  compose (other) {
     let result = []
     const ops1 = this.ops, ops2 = other.ops
     let i1 = 0, i2 = 0
@@ -106,7 +106,7 @@ export class AceOperation {
       let restOp1, restOp2
       if (l1 > l2) {
         ;[op1, restOp1] = splitOp(op1, l2)
-      } else if (l1 < l2)  {
+      } else if (l1 < l2) {
         ;[op2, restOp2] = splitOp(op2, l1)
       }
 
@@ -137,7 +137,7 @@ export class AceOperation {
 
   // for A, B returns A`, B` such that
   // apply(apply(D, A), B`) === apply(apply(D, B), A`)
-  static transform(operation1, operation2) {
+  static transform (operation1, operation2) {
     const ops1 = operation1.ops, ops2 = operation2.ops
     let i1 = 0, i2 = 0
     let op1 = ops1[i1++], op2 = ops2[i2++]
@@ -165,7 +165,7 @@ export class AceOperation {
       let restOp1, restOp2
       if (l1 > l2) {
         ;[op1, restOp1] = splitOp(op1, l2)
-      } else if (l1 < l2)  {
+      } else if (l1 < l2) {
         ;[op2, restOp2] = splitOp(op2, l1)
       }
 
@@ -190,26 +190,26 @@ export class AceOperation {
     return [new AceOperation(ops1prime), new AceOperation(ops2prime)]
   }
 
-  static fromJSON(json) { return new AceOperation(json) }
-  toJSON() { return this.ops }
-  
+  static fromJSON (json) { return new AceOperation(json) }
+  toJSON () { return this.ops }
+
   // You have to compute it while it's hot!!!
-  static fromAceDelta({action, start, end, lines}, documentLines) {
+  static fromAceDelta ({action, start, end, lines}, documentLines) {
     if (action === 'insert') {
       let op = new AceOperation()
         .retain(start.row)
       if (start.row === end.row) {
         op = op.modify(new TextOperation()
-            .retain(start.column)
-            .insert(lines[0])
-            .retain(documentLines[start.row].length - end.column)
-            .toJSON())
+          .retain(start.column)
+          .insert(lines[0])
+          .retain(documentLines[start.row].length - end.column)
+          .toJSON())
       } else {
         if (start.column > 0) {
           op = op.modify(new TextOperation()
-              .retain(start.column)
-              .insert(lines[0])
-              .toJSON())
+            .retain(start.column)
+            .insert(lines[0])
+            .toJSON())
         } else {
           op = op.insert(lines[0])
         }
@@ -218,9 +218,9 @@ export class AceOperation {
         }
         if (end.column > 0) {
           op = op.modify(new TextOperation()
-              .insert(lines[lines.length - 1])
-              .retain(documentLines[end.row].length - end.column)
-              .toJSON())
+            .insert(lines[lines.length - 1])
+            .retain(documentLines[end.row].length - end.column)
+            .toJSON())
         }
       }
       return op
@@ -230,16 +230,16 @@ export class AceOperation {
         .retain(start.row)
       if (start.row === end.row) {
         op = op.modify(new TextOperation()
-            .retain(start.column)
-            .delete(lines[0].length)
-            .retain(documentLines[start.row].length - start.column)
-            .toJSON())
+          .retain(start.column)
+          .delete(lines[0].length)
+          .retain(documentLines[start.row].length - start.column)
+          .toJSON())
       } else {
         if (start.column > 0) {
           op = op.modify(new TextOperation()
-              .retain(start.column)
-              .delete(lines[0].length)
-              .toJSON())
+            .retain(start.column)
+            .delete(lines[0].length)
+            .toJSON())
         } else {
           op = op.delete(1)
         }
@@ -248,9 +248,9 @@ export class AceOperation {
         }
         if (end.column > 0) {
           op = op.modify(new TextOperation()
-              .delete(lines[lines.length - 1].length)
-              .retain(documentLines[start.row].length - start.column)
-              .toJSON())
+            .delete(lines[lines.length - 1].length)
+            .retain(documentLines[start.row].length - start.column)
+            .toJSON())
         } else {
           op = op.retain(1)
         }
@@ -261,8 +261,8 @@ export class AceOperation {
       throw new Error(`unrecognised action ${action}`)
     }
   }
-  
-  toAceDeltas() {
+
+  toAceDeltas () {
     const ops = this.ops
     let cursor = 0, result = []
     for (let i = 0; i < this.ops.length; i++) {

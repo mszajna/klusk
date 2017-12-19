@@ -9,7 +9,7 @@ const iconClass = ({isDir, open}) => 'icon fa ' + (
       ? 'fa-folder-open-o'
       : 'fa-folder-o'
     : ''
-  )
+)
 
 const orders = [
   ([, {isDir}]) => !isDir,
@@ -37,7 +37,7 @@ export const App = ({handlers: {onFileClick, onSave}, state: {directory, editor,
     </div>
     <div className="main">
       {editor.session
-      ? <div className="editor"><AceEditor session={editor.session} onSave={onSave} /></div>
-      : undefined}
+        ? <div className="editor"><AceEditor session={editor.session} onSave={onSave} /></div>
+        : undefined}
     </div>
   </div>
