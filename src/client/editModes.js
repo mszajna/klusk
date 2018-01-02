@@ -14,6 +14,10 @@ export default filename => {
     case 'html': return 'ace/mode/html'
     case 'md': return 'ace/mode/markdown'
     case 'yml': return 'ace/mode/yaml'
+    case 'go': return 'ace/mode/golang'
+    case 'clj': return 'ace/mode/clojure'
+    case 'java': return 'ace/mode/java'
+    case 'xml': return 'ace/mode/xml'
     default: return 'ace/mode/text'
   }
 }
