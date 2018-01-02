@@ -1,4 +1,4 @@
-FROM mszajna/node-wrtc:latest
+FROM node:latest
 
 RUN yarn global add klusk
 

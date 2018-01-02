@@ -1,6 +1,6 @@
 {
   "name": "klusk",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Klusk lets you edit remote files with your web browser",
   "homepage": "https://mszajna.github.io/klusk/",
   "author": {
@@ -54,7 +54,7 @@
   "dependencies": {
     "ably": "^1.0.1",
     "brace": "^0.11.0",
-    "chokidar": "^1.6.1",
+    "chokidar": "^2.0.0",
     "classnames": "^2.2.5",
     "create-react-class": "^15.6.2",
     "lodash": "^4.17.4",
@@ -70,6 +70,6 @@
     "socket.io-client": "^2.0.4",
     "source-map-support": "^0.5.0",
     "uuid": "^3.0.1",
-    "wrtc": "0.0.63"
+    "wrtc": "0.0.65"
   }
 }
