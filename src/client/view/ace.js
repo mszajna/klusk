@@ -2,6 +2,7 @@ import React from 'react'
 import createReactClass from 'create-react-class'
 import ace from 'brace'
 import 'brace/ext/language_tools.js'
+import 'brace/ext/searchbox'
 
 ace.acequire('ace/ext/language_tools')
 
@@ -48,6 +49,7 @@ export const createEditor = el => {
 
 export const applyProps = (editor, {session, onSave}) => {
   editor.setSession(session)
+  editor.focus()
   editor.runOnSave = () => onSave ? onSave() : undefined
 }
 
